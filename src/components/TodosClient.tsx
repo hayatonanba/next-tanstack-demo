@@ -96,77 +96,68 @@ export default function TodosClient({ initialTodos }: { initialTodos: Todo[] }) 
           if (!title.trim()) return;
           addMutation.mutate(title.trim());
         }}
-        style={{ display: "flex", gap: 8, marginBottom: 16 }}
+        className="mb-6 flex gap-3"
       >
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="新規タスク..."
-          style={{ flex: 1, padding: "8px 10px", border: "1px solid #ddd", borderRadius: 8 }}
+          className="flex-1 rounded-xl border border-zinc-200 bg-white/70 px-3 py-2 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-indigo-500 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100"
         />
         <button
           type="submit"
           disabled={addMutation.isPending}
-          style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd" }}
+          className="rounded-xl bg-indigo-600 px-4 py-2 text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
           追加
         </button>
       </form>
 
-      <ul style={{ display: "grid", gap: 8 }}>
-        {todos.map((t) => (
-          <li
-            key={t.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: 10,
-              border: "1px solid #eee",
-              borderRadius: 12,
-              opacity: t.id.startsWith("temp-") ? 0.6 : 1,
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={t.done}
-              onChange={() => updateMutation.mutate({ id: t.id, patch: { done: !t.done } })}
-              aria-label="完了切替"
-            />
-            <span
-              style={{
-                flex: 1,
-                textDecoration: t.done ? "line-through" : "none",
-                opacity: t.done ? 0.6 : 1,
-                wordBreak: "break-all",
-              }}
+      <ul className="grid gap-3">
+        {todos.map((t) => {
+          const isTemp = t.id.startsWith("temp-");
+          return (
+            <li
+              key={t.id}
+              className={`flex items-center gap-3 rounded-xl border border-zinc-200 bg-white/70 p-3 shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/50 ${isTemp ? "opacity-60" : ""}`}
             >
-              {t.title}
-            </span>
+              <input
+                type="checkbox"
+                checked={t.done}
+                onChange={() => updateMutation.mutate({ id: t.id, patch: { done: !t.done } })}
+                aria-label="完了切替"
+                className="size-4 accent-indigo-600"
+              />
+              <span
+                className={`flex-1 break-words ${t.done ? "line-through opacity-60" : ""}`}
+              >
+                {t.title}
+              </span>
 
-            <button
-              onClick={() => {
-                const next = window.prompt("タイトルを編集", t.title);
-                if (next && next.trim() && next !== t.title) {
-                  updateMutation.mutate({ id: t.id, patch: { title: next.trim() } });
-                }
-              }}
-              style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #ddd" }}
-            >
-              編集
-            </button>
+              <button
+                onClick={() => {
+                  const next = window.prompt("タイトルを編集", t.title);
+                  if (next && next.trim() && next !== t.title) {
+                    updateMutation.mutate({ id: t.id, patch: { title: next.trim() } });
+                  }
+                }}
+                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              >
+                編集
+              </button>
 
-            <button
-              onClick={() => deleteMutation.mutate(t.id)}
-              style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #ddd" }}
-            >
-              削除
-            </button>
-          </li>
-        ))}
+              <button
+                onClick={() => deleteMutation.mutate(t.id)}
+                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              >
+                削除
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
-      <div style={{ marginTop: 12, fontSize: 12, opacity: 0.7 }}>
+      <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
         {isFetching ? "同期中..." : "最新です"}
       </div>
     </section>
